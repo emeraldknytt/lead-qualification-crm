@@ -1,0 +1,833 @@
+{
+  "name": "01 - First Lead Qualification Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Project Enquiry Form",
+        "formDescription": "Tell us about your business and the automation service you need.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Full Name",
+              "placeholder": "Enter full name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email Address",
+              "fieldType": "email",
+              "placeholder": "your-email@example.com",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Service Needed",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Budget",
+              "fieldType": "number",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Timeline",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Project Description",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "path": "project-enquiry"
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        1712,
+        816
+      ],
+      "id": "3358b5e8-75d9-4f00-8bab-0a2df808095e",
+      "name": "On form submission1",
+      "webhookId": "8b84d3f8-a284-4a01-afd7-2df363029c54"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "5faa520d-57b4-4f08-bb5b-76ef79c4834c",
+              "name": "full_name",
+              "value": "={{ $json['Full Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "6aa00913-0282-4770-8d6e-a3f280ba871b",
+              "name": "email",
+              "value": "={{ $json['Email Address'] }}",
+              "type": "string"
+            },
+            {
+              "id": "0a341802-6651-4546-bf89-be7494e88eb5",
+              "name": "company",
+              "value": "={{ $json['Company Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "13ddbb5f-e8d6-45fe-9936-d8d37bd6b076",
+              "name": "service_needed",
+              "value": "={{ $json['Service Needed'] }}",
+              "type": "string"
+            },
+            {
+              "id": "ad0aa139-9aff-4ef0-90dd-8f06413fc0dc",
+              "name": "budget",
+              "value": "={{ $json.Budget }}",
+              "type": "number"
+            },
+            {
+              "id": "61d0644a-7582-4135-9892-f557f63435de",
+              "name": "timeline",
+              "value": "={{ $json.Timeline }}",
+              "type": "string"
+            },
+            {
+              "id": "cb461e18-b66e-4f86-9b82-f298a302815b",
+              "name": "message",
+              "value": "={{ $json['Project Description'] }}",
+              "type": "string"
+            },
+            {
+              "id": "6cff9c5c-4269-42d3-b0d9-c3e7c4971e39",
+              "name": "created_at",
+              "value": "={{ $now.toFormat('dd-mm-yyyy hh:mm:ss')}}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        1936,
+        816
+      ],
+      "id": "ae257909-255e-43ed-be56-d1ec52ec3729",
+      "name": "Lead details1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "b3773d90-5807-4a0d-a294-647cdaf16eb9",
+              "leftValue": "={{ $json.budget }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        2160,
+        816
+      ],
+      "id": "80728e94-0fa2-4c00-8172-8aad1fbae0e2",
+      "name": "Valid budget condition1"
+    },
+    {
+      "parameters": {
+        "errorMessage": "Invalid lead submission: Budget must be zero or greater. The lead was not processed."
+      },
+      "type": "n8n-nodes-base.stopAndError",
+      "typeVersion": 1,
+      "position": [
+        2384,
+        912
+      ],
+      "id": "474d2da9-3f7b-46e0-b942-158e3cd8b095",
+      "name": "Invalid budget error catcher1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ca1706a1-445d-4afe-8545-36b5ae245675",
+              "name": "lead_priority",
+              "value": "High Priority",
+              "type": "string"
+            },
+            {
+              "id": "c2f9281a-22e3-4ec8-bd4b-2135dcf8d48f",
+              "name": "recommended_action",
+              "value": "Contact this lead within 24 hours",
+              "type": "string"
+            },
+            {
+              "id": "00b794b9-dae0-4c87-8a6d-79cab8aa4f1f",
+              "name": "follow_up_days",
+              "value": 1,
+              "type": "number"
+            },
+            {
+              "id": "16cf6010-0cee-411d-aecf-b29d0014ead5",
+              "name": "lead_status",
+              "value": "New",
+              "type": "string"
+            },
+            {
+              "id": "9101c11f-29c1-4e6d-bf36-233048ea170a",
+              "name": "next_follow_up_date",
+              "value": "={{ $now.plus({ days: 1 }).toISODate() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2608,
+        624
+      ],
+      "id": "61dfdbcb-9282-4847-aba6-edc25e0a168b",
+      "name": "Lead priority field2"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d295a37a-39e2-4681-8911-1a9cb228819f",
+              "name": "lead_priority",
+              "value": "Standard Priority",
+              "type": "string"
+            },
+            {
+              "id": "97b18c99-51b1-4361-8a69-9b71dc49c971",
+              "name": "recommended_action",
+              "value": "Contact this lead within 3 days",
+              "type": "string"
+            },
+            {
+              "id": "29fb43a2-9f7b-4666-a5b2-c711b8350c84",
+              "name": "follow_up_days",
+              "value": 3,
+              "type": "number"
+            },
+            {
+              "id": "6c99eed2-8a40-4e72-8033-3623d42791c7",
+              "name": "lead_status",
+              "value": "New",
+              "type": "string"
+            },
+            {
+              "id": "3680b510-060b-48fa-86e3-9e54f58d414e",
+              "name": "next_follow_up_date",
+              "value": "={{ $now.plus({ days: 3 }).toISODate() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        2608,
+        816
+      ],
+      "id": "dcc5f46c-e522-4e26-8148-dc85e16cc3a3",
+      "name": "Lead priority field3"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREEDSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Lead Qualification CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREEDSHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREEDSHEET_ID/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "full_name": "={{ $json.full_name }}",
+            "email": "={{ $json.email }}",
+            "company": "={{ $json.company }}",
+            "service_needed": "={{ $json.service_needed }}",
+            "budget": "={{ $json.budget }}",
+            "timeline": "={{ $json.timeline }}",
+            "lead_priority": "={{ $json.lead_priority }}",
+            "message": "={{ $json.message }}",
+            "recommended_action": "={{ $json.recommended_action }}",
+            "follow_up_days": "={{ $json.follow_up_days }}",
+            "created_at": "={{ $json.created_at }}",
+            "lead_status": "={{ $json.lead_status }}",
+            "next_follow_up_date": "={{ $json.next_follow_up_date }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "full_name",
+              "displayName": "full_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "company",
+              "displayName": "company",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "service_needed",
+              "displayName": "service_needed",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "budget",
+              "displayName": "budget",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timeline",
+              "displayName": "timeline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lead_priority",
+              "displayName": "lead_priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "recommended_action",
+              "displayName": "recommended_action",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "follow_up_days",
+              "displayName": "follow_up_days",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "lead_status",
+              "displayName": "lead_status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "next_follow_up_date",
+              "displayName": "next_follow_up_date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        2832,
+        720
+      ],
+      "id": "3f3dc7e4-e018-4b6c-8da1-0966d29a837b",
+      "name": "Append or update leads sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "srxqTpMgFsc84dsu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SPREEDSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Lead Qualification CRM",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREEDSHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1408673090,
+          "mode": "list",
+          "cachedResultName": "Execution Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SPREEDSHEET_ID/edit#gid=1408673090"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "execution_id": "= {{ $execution.id }}",
+            "execution_url": "=",
+            "lead_email": "={{ $json.email }}",
+            "lead_priority": "={{ $json.lead_priority }}",
+            "logged_at": "={{ $now.format('yyyy-MM-dd') }}",
+            "processing_stage": "CRM Updated"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "execution_id",
+              "displayName": "execution_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "execution_url",
+              "displayName": "execution_url",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lead_email",
+              "displayName": "lead_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "lead_priority",
+              "displayName": "lead_priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "processing_stage",
+              "displayName": "processing_stage",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "logged_at",
+              "displayName": "logged_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        3056,
+        720
+      ],
+      "id": "b1dd6232-263c-499e-8f8d-aa18b7227314",
+      "name": "Append execution logs1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "srxqTpMgFsc84dsu",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.lead_email }}",
+        "subject": "Your enquiry has been received",
+        "emailType": "text",
+        "message": "=Hello {{ $('On form submission1').item.json['Full Name'] }},  \n\nThank you for contacting our agency!  \n\nWe have successfully received your enquiry regarding {{ $('Append or update leads sheet1').item.json.recommended_action }}.  \n\nYour enquiry has been reviewed and classified as {{ $json.lead_priority }}.  \n\nOur recommended next step is: {{ $('Append or update leads sheet1').item.json.recommended_action }}.  \n\nWe appreciate your interest and look forward to learning more about your project.  \n\nBest regards, \nThe Agency Team",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3280,
+        624
+      ],
+      "id": "915d015f-dd46-4eb8-a80c-ca507db74049",
+      "name": "Leads form submission confirmation mail1",
+      "webhookId": "eb321751-0f2f-422d-a219-85b68e8b88e0",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "E9bzlOInUkHojJlN",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "a6cdb260-0508-4855-a070-b7fb8345bcd3",
+              "leftValue": "={{ $json.lead_priority }}",
+              "rightValue": "High Priority",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        3280,
+        816
+      ],
+      "id": "f4f2a32b-0b75-4635-a9fa-7ba08ed109b3",
+      "name": "Priority checker1"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "2f4b51b1-1a65-4103-b475-d61e771e6933",
+              "leftValue": "={{ $json.budget }}",
+              "rightValue": 1000,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        2384,
+        720
+      ],
+      "id": "03674f64-53b6-467f-9c83-3bf033f400b1",
+      "name": "Priority condition1"
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "=New High Priority Lead: {{ $json.full_name }}",
+        "emailType": "text",
+        "message": "=Hello,\n\nA new High Priority lead has been received.\n\nLEAD DETAILS\n\nName: {{ $json.full_name }}\nEmail: {{ $json.email }}\nCompany: {{ $json.company }}\nService Needed: {{ $json.service_needed }}\nBudget: {{ $json.budget }}\nTimeline: {{ $json.timeline }}\n\nRECOMMENDED ACTION\n\n{{ $json.recommended_action }}\n\nPlease review this lead and follow up accordingly.\n\nLead Qualification CRM",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        3504,
+        800
+      ],
+      "id": "7ab8c479-1ead-4820-b8d1-7da49fe426be",
+      "name": "Team high priority mail1",
+      "webhookId": "a5bab638-7b54-4682-94ad-82e4adc136d5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "E9bzlOInUkHojJlN",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "On form submission1": [
+      {
+        "json": {
+          "Full Name": "Test logger",
+          "Email Address": "lead-email@example.com",
+          "Company Name": "Udated Test Company",
+          "Service Needed": "Website Automation",
+          "Budget": 2500,
+          "Timeline": "Within 2 weeks",
+          "Project Description": "Testing",
+          "submittedAt": "2026-11-16T16:21:46.295+01:00",
+          "formMode": "test"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission1": {
+      "main": [
+        [
+          {
+            "node": "Lead details1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead details1": {
+      "main": [
+        [
+          {
+            "node": "Valid budget condition1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Valid budget condition1": {
+      "main": [
+        [
+          {
+            "node": "Priority condition1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid budget error catcher1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead priority field2": {
+      "main": [
+        [
+          {
+            "node": "Append or update leads sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead priority field3": {
+      "main": [
+        [
+          {
+            "node": "Append or update leads sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update leads sheet1": {
+      "main": [
+        [
+          {
+            "node": "Append execution logs1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append execution logs1": {
+      "main": [
+        [
+          {
+            "node": "Leads form submission confirmation mail1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Priority checker1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Priority checker1": {
+      "main": [
+        [
+          {
+            "node": "Team high priority mail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Priority condition1": {
+      "main": [
+        [
+          {
+            "node": "Lead priority field2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Lead priority field3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "errorWorkflow": "tqrJlG6LtFFDJAIZ",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "7148ea94-2c98-4808-9c3c-0889b818d1f0",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e3e49a7c484e16317819cf8949aaa15cd2ad789c2a78d924119022b5f367dec0"
+  },
+  "nodeGroups": [],
+  "id": "tyvacGNi5OJlj920",
+  "tags": []
+}
